@@ -215,6 +215,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 .carta.flip{animation:flip .45s}
 @keyframes flip{50%{transform:rotateY(90deg)}}
 .reflexion{background:var(--amarillo);color:var(--negro);border-radius:12px;padding:12px 14px;font-family:var(--f-cond);font-size:19px;line-height:1.25}
+.eco-modos{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.eco-modos span{font-family:var(--f-pixel);font-size:11px;color:var(--salvia);margin-right:4px}
+.eco-modos .ficha[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo)}
+.feed{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed-item{background:var(--blanco);color:var(--negro);border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:4px 10px;align-items:center;border:3px solid transparent}
+.feed-item.top{border-color:var(--amarillo)}
+.feed-item .av{width:30px;height:30px;border-radius:50%;align-self:start}
+.feed-item small{display:block;font-size:12px;font-weight:700}
+.feed-item b{display:block;font-family:var(--f-slab);font-weight:400;font-size:16px;line-height:1.25}
+.feed-item .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.feed-item .tags em{font-style:normal;font-family:var(--f-pixel);font-size:9.5px;background:#efe9d6;padding:2px 6px;border-radius:4px}
+.feed-item .pos{font-family:var(--f-cond);font-weight:700;font-size:26px;align-self:start}
+.feed-item .vis{grid-column:2 / 4;height:6px;background:#e3dcc6;border-radius:3px;overflow:hidden}
+.feed-item .vis i{display:block;height:100%;background:var(--rosa);transition:width .6s}
 .posts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .post{background:var(--blanco);color:var(--negro);border-radius:14px;padding:12px;text-align:left;border:3px solid transparent;display:grid;gap:8px;align-content:start;font-size:14px;line-height:1.35}
 .post header{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:700}
@@ -1161,23 +1175,38 @@ promptcraft(cont){
   render(false);
 },
 eco(cont){
-  cont.innerHTML=`<p class="eyebrow">Demo · ¿Cuál circularía más?</p><p class="reto">Dos publicaciones ficticias sobre un mismo tema. ¿Cuál crees que tendría mayor visibilidad?</p>`;
-  const P=[{u:"@vidasana.ya",c:C.rosa,t:"Lo que NADIE te dice del desayuno: este hábito te está arruinando la salud y los médicos lo callan.",acc:"Video corto · 15 s",img:`linear-gradient(135deg,${C.rosa},${C.amarillo})`},
-           {u:"@nutricion.abierta",c:C.verde,t:"¿Es obligatorio desayunar? Revisamos tres estudios: la respuesta depende de cada persona. Te explicamos por qué.",acc:"Carrusel · 8 diapositivas",img:`repeating-linear-gradient(90deg,${C.verde} 0 30px,${C.salvia} 30px 60px)`}];
-  const w=document.createElement("div");w.className="posts";cont.appendChild(w);
-  const res=document.createElement("div");res.style.cssText="display:grid;gap:12px";cont.appendChild(res);
-  P.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.className="post";b.setAttribute("aria-pressed","false");
-    b.innerHTML=`<header><i style="background:${p.c}"></i>${esc(p.u)}</header><div class="img" style="background:${p.img}"></div><span>${esc(p.t)}</span><span class="acc">${esc(p.acc)} · publicación ficticia</span>`;
-    b.onclick=()=>{w.querySelectorAll(".post").forEach(x=>x.setAttribute("aria-pressed",x===b));revelar(i)};w.appendChild(b)});
-  const CR=[["Provoca una emoción intensa",90,25],["Promete un secreto o una revelación",95,10],["Genera polémica y comentarios rápidos",85,30],["Es corto y fácil de consumir",90,45],["Cita fuentes verificables",5,90],["Reconoce matices y diferencias",5,85]];
-  function revelar(i){
-    res.innerHTML=`<p style="font-size:16px">${i===0?"Probablemente aciertas: los criterios que suelen premiar los algoritmos favorecen a la primera publicación.":"Sería lo deseable, pero los criterios que suelen premiar los algoritmos favorecen a la primera publicación."}</p>
-    <div class="criterios"><div class="crit crit-head"><span>Criterio de visibilidad</span><span>@vidasana</span><span>@nutricion</span></div>
-    ${CR.map(c=>`<div class="crit"><span>${esc(c[0])}</span><span class="m"><i data-w="${c[1]}"></i></span><span class="m b"><i data-w="${c[2]}"></i></span></div>`).join("")}</div>
-    <p class="nota">Valores ilustrativos para el juego, no mediciones.</p>
-    <p class="reflexion">¿Que un contenido sea visible significa necesariamente que sea valioso, verdadero o responsable?</p>`;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>res.querySelectorAll("[data-w]").forEach(x=>x.style.width=x.dataset.w+"%")));
+  cont.innerHTML=`<p class="eyebrow">Demo · ¿Quién decide qué ves primero?</p><p class="reto">Estas cuatro publicaciones ficticias hablan de alimentación. Cambia lo que premia el algoritmo y mira cómo se reordena tu feed.</p>`;
+  const P=[
+   {u:"@vidasana.ya",c:C.rosa,t:"El alimento que comes TODOS los días y te está enfermando 😱",tags:["Miedo","Secreto"],eng:95,conf:10},
+   {u:"@nutricion.abierta",c:C.verde,t:"¿Es obligatorio desayunar? Esto dicen tres estudios",tags:["Fuentes","Matices"],eng:35,conf:90},
+   {u:"@fit.en.7.dias",c:C.amarillo,t:"Bajé 10 kilos en una semana con este jugo 🔥",tags:["Promesa fácil","Testimonio"],eng:85,conf:5},
+   {u:"@salud.publica",c:C.salvia,t:"Cómo leer las etiquetas de los alimentos, paso a paso",tags:["Fuente oficial","Útil"],eng:20,conf:95}];
+  const MODOS=[["eng","Lo que más engancha"],["conf","Lo que es más confiable"]];
+  const sel=document.createElement("div");sel.className="eco-modos";sel.setAttribute("role","group");sel.setAttribute("aria-label","Qué premia el algoritmo");
+  sel.innerHTML=`<span>El algoritmo premia:</span>`;cont.appendChild(sel);
+  const feed=document.createElement("ol");feed.className="feed";cont.appendChild(feed);
+  const msg=document.createElement("p");msg.className="prompt";msg.setAttribute("aria-live","polite");cont.appendChild(msg);
+  const refl=document.createElement("p");refl.className="reflexion";refl.hidden=true;refl.textContent="Lo que vemos primero no es necesariamente lo más valioso o verdadero: depende de lo que el sistema decide premiar. Y quien crea contenido también elige qué premia.";cont.appendChild(refl);
+  const nota=document.createElement("p");nota.className="nota";nota.textContent="Publicaciones y valores ficticios, creados para el juego.";cont.appendChild(nota);
+  const items=P.map(x=>{const li=document.createElement("li");li.className="feed-item";
+    li.innerHTML=`<i class="av" style="background:${x.c}"></i><div><small>${esc(x.u)}</small><b>${esc(x.t)}</b><span class="tags">${x.tags.map(t=>`<em>${esc(t)}</em>`).join("")}</span></div><span class="pos"></span><span class="vis" aria-hidden="true"><i></i></span>`;
+    return li});
+  const vistos=new Set();
+  function ordenar(m){
+    vistos.add(m);
+    sel.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+    const antes=new Map(items.map(li=>[li,li.getBoundingClientRect().top]));
+    const orden=P.map((x,i)=>i).sort((a,b)=>P[b][m]-P[a][m]);
+    orden.forEach((k,pos)=>{const li=items[k];feed.appendChild(li);li.querySelector(".pos").textContent=(pos+1)+"º";
+      li.querySelector(".vis i").style.width=P[k][m]+"%";li.classList.toggle("top",pos===0)});
+    if(!RM)items.forEach(li=>{const d=antes.get(li)-li.getBoundingClientRect().top;if(!d||!antes.get(li))return;
+      li.style.transition="none";li.style.transform=`translateY(${d}px)`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{li.style.transition="transform .55s cubic-bezier(.4,0,.2,1)";li.style.transform=""}))});
+    msg.textContent=m==="eng"?"Arriba quedan el miedo, el secreto y la promesa fácil: lo que provoca reacciones rápidas. Las publicaciones con fuentes casi no se ven.":"Ahora arriba quedan las publicaciones con fuentes y matices. Son las mismas cuatro: solo cambió el criterio.";
+    refl.hidden=vistos.size<2;
   }
+  MODOS.forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.className="ficha";b.dataset.m=k;b.textContent=t;b.onclick=()=>ordenar(k);sel.appendChild(b)});
+  ordenar("eng");
 },
 artefacto(cont){
   cont.innerHTML=`<p class="eyebrow">Demo · La IA como interlocutora</p><p class="reto">¿Qué artefacto quisieras desarrollar?</p>`;
